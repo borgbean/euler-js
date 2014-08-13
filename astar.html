@@ -1,0 +1,269 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Test area</title>
+	<link rel="stylesheet" href="stylesheet.css">
+	<link rel="stylesheet" href="tilesheet.css">
+	<style id="tile_styles"></style>
+	<style type="text/css">
+	#tiles {
+		width: 750px;
+		height: 750px;
+	}
+	#tiles .considered {
+		background-color: blue;
+	}
+	#tiles .checked {
+		background-color: red;
+	}
+	#tiles .visited {
+		background-color: green;
+	}
+	#tiles .blocked {
+		background-color: black;
+	}
+	</style>
+</head>
+<body>
+	<script src="jquery-2.1.1.min.js"></script>
+	<script src="jquery-ui-1.10.4.min.js"></script>
+	<script src="heap.js"></script>
+	<script>
+		var tiles;
+		var rows, cols;
+		var width, height;
+		var diagonals = true;
+
+		function Tile(tiles, tile, usable, idx) {
+			this.tile = tile;
+
+			this.usable = usable;
+
+			this.cost = Infinity;
+			this.heurCost = Infinity;
+
+			this.cameFrom = null;
+			this.closed = false;
+			this.idx = idx;
+
+			this.jqTile = $(tile);
+
+			//returns array of [[weight, tile]]
+			this.getNeighbors = function() {
+				var neighbors = [];
+				var tile = tiles[idx];
+				var col = idx % cols;
+				var row = Math.floor(idx / cols);
+				for(var i = ((row - 1) >= 0 ? row-1 : row); i <= row + 1 && i < rows; ++i) {
+					for(var j = ((col - 1) >= 0 ? col-1 : col); j <= col + 1 && j < cols; ++j) {
+						var next = tiles[(i * cols) + j];
+						if(next == tile) continue;
+						if(!diagonals) {
+							if((i > row && j > col) || (i < row && j < col)) {continue;} //no diagonals
+						}
+						neighbors.push([1, next]);
+					}
+				}
+				return neighbors;
+			};
+		}
+
+		function getLeft(tile) {
+			var col = tile % cols;
+			return Math.ceil((width / cols) * col);
+		}
+
+		function getTop(tile) {
+			var row = Math.floor(tile / cols);
+			return Math.ceil((height / rows) * row);
+		}
+
+
+		function prepareTiles() {
+			var tilesDiv = $("#tiles");
+			width = tilesDiv.css("width");
+			height = tilesDiv.css("height");
+			width = parseInt(width.substring(0, width.length - 2));
+			height = parseInt(height.substring(0, height.length - 2));
+
+			var config = $("#config")[0];
+			cols = parseInt(config.dimX.value);
+			rows = parseInt(config.dimY.value);
+			if(cols <= 0 || rows <=0 || isNaN(cols) || isNaN(rows) || (cols * rows) > 2500) return;
+
+			var html = "";
+			for(var row = 0; row < rows; ++row) {
+				for(var col = 0; col < cols; ++col) {
+					var idx = (col + (row*cols));
+					var position = "top: " + getTop(idx) + "px; left: " + getLeft(idx) + "px;";
+					var style = "style=\"" + position + " " + "\"";
+					html += "<div class=\"tile\" id=\"tile" + idx + "\" " + style + "></div>\n";
+				}
+			}
+
+			tilesDiv.empty();
+			tilesDiv.append(html);
+
+			tiles = new Array(cols * rows);
+			for(i = 0; i < (cols * rows); ++i) {
+				var tile = $("#tile" + i)[0];
+				tiles[i] = new Tile(tiles, tile, true, i);
+			}
+
+			var tileStyles = $("#tile_styles");
+ 			$(".tile").css({
+				"background-size": width + "px " + height + "px",
+				"width": width / cols + "px",
+				"height": height / rows + "px"
+			});
+		}
+
+		function shuffle(startPoint, endPoint) {
+			$(".visited, .considered, .blocked, .checked").removeClass("visited considered blocked checked");
+
+			for(i = tiles.length - 1; i >= 0; --i) {
+				var tile = tiles[i];
+				var usable = true;
+				if(Math.random() < 0.35 && !(i == startPoint || i == endPoint)) {
+					tile.tile.className += " blocked";
+					usable = false;
+				}
+				tile.usable = usable;
+			}
+		}
+
+		function reconstructPathVisually(endTile, time) {
+			var tile = [null, endTile];
+			tile[1].tile.className += " visited";
+			if(tile[1].cameFrom === null) {
+				return;
+			}
+			tile = tile[1].cameFrom;
+			aStarTimeout = setTimeout(function() {reconstructPathVisually(tile[1], time * .95)}, time);
+		}
+
+		var running = false;
+
+		function aStar(tiles, startPoint, endPoint) {
+			if(running) {return;}
+			running = true;
+			for(var i = tiles.length - 1; i >= 0; --i) {
+				var tile = tiles[i];
+				tile.closed = false;
+				tile.cost = Infinity;
+				tile.heurCost = Infinity;
+			}
+
+			openSet = new BinaryHeap(function(x) {return x.heurCost;});
+			var tile = tiles[startPoint];
+			tile.cost = 0;
+			tile.heurCost = 0;
+			openSet.push(tile);
+			tile.tile.className += " considered";
+
+			aStarTimeout = setTimeout(function() {
+				aStarIteration(openSet, endPoint, 60);
+			}, 10);
+		}
+
+		var aStarTimeout = null;
+
+		function aStarIteration(openSet, endPoint, time) {
+			var endTile = tiles[endPoint];
+			tile = openSet.pop();
+			if(tile == endTile) {
+				running = false;
+				tile.tile.className += " considered";
+				reconstructPathVisually(endTile, 60);
+				return;
+			}
+			if(!tile) {
+				failed();
+				running = false;
+				return;
+			}
+			tile.closed = true;
+			tile.tile.className += " checked";
+
+			var neighbors = tile.getNeighbors();
+			for(var i = neighbors.length - 1; i >= 0; --i) {
+				var neighbor = neighbors[i];
+				if(neighbor[1].closed || !neighbor[1].usable) { continue; }
+
+				var cost = tile.cost + neighbor[0];
+				if(cost > neighbor[1].cost) {
+					continue;
+				}
+				var inOpen = true;
+				if(neighbor[1].cost == Infinity) {
+					inOpen = false;
+				}
+				neighbor[1].cost = cost;
+				neighbor[1].heurCost = cost + calcHeurCost(neighbor[1].idx, endPoint);
+				neighbor[1].cameFrom = [neighbor[0], tile];
+				if(!inOpen) { //not in open set
+					var temp = openSet.content[0];
+					if(temp != null && neighbor[1].heurCost <= temp.heurCost) {
+						//put this vertex in the top spot, then re-add what was there before (to prioritize new nodes with minimal cost)
+						openSet.content[0] = neighbor[1];
+						openSet.push(temp);
+					} else {
+						openSet.push(neighbor[1]);
+					}
+					neighbor[1].tile.className += " considered";
+				} else {
+					//TODO make this efficient
+					openSet.remove(neighbor[1]);
+					openSet.push(neighbor[1]);
+				}
+			}
+			aStarTimeout = setTimeout(function() {aStarIteration(openSet, endPoint, time * .96);}, time);
+		}
+
+		function failed() {
+			alert("Failed!");
+		}
+
+		function calcHeurCost(tileIdx, destTileIdx) {
+			var row = Math.floor(tileIdx / cols);
+			var col = tileIdx % cols;
+			var destRow = Math.floor(destTileIdx / cols);
+			var destCol = destTileIdx % cols;
+			if(diagonals) {
+				return Math.sqrt(Math.pow(row - destRow, 2) + Math.pow(col - destCol, 2));
+			} else {
+				return Math.abs(row - destRow) + Math.abs(col - destCol);
+			}
+		}
+
+		function randomize() {
+			clearTimeout(aStarTimeout);
+			if(!running) {
+				shuffle(0, tiles.length - 1);
+				aStar(tiles, 0, tiles.length - 1);
+			} else {
+				running = false;
+				randomize();
+			}
+		}
+
+		$(document).ready(function() {
+			prepareTiles();
+			shuffle(0, tiles.length - 1);
+			aStar(tiles, 0, tiles.length - 1);
+		});
+	</script>
+	<form id="config">
+		<table>
+		<tr>
+			<td>X</td><td><input type="text" class="dim" id="dimX" value="50" onchange="prepareTiles()"></td>
+			<td>Y</td><td><input type="text" class="dim" id="dimY" value="50" onchange="prepareTiles()"></td>
+		</tr>
+		<tr>
+			<td colspan="3"><input type="button" value="randomize" onclick="randomize()"></td>
+		</tr>
+		</table>
+	</form>
+	<div id="tiles"></div>
+</body>
+</html>

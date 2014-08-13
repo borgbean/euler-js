@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!-- saved from url=(0029)http://sammich.info/test.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>test</title>
+</head>
+<body>
+<h1 id="hello">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+Duis aute irure dolor in reprehenderit in voluptate velit esse.</h1>
+
+<script type="text/javascript">
+	var paragraph = document.getElementById("hello");
+	var parent = paragraph.parentNode;
+
+	var h1 = document.createElement("h1");
+
+	var characters = paragraph.textContent.split("");
+	var html = "";
+	for(var i = 0; i < characters.length; ++i) {
+		var span = document.createElement("span");
+		span.textContent = characters[i];
+		characters[i] = span.style;
+		h1.appendChild(span);
+	}
+
+	parent.replaceChild(h1, paragraph);
+
+	var freqMul = 0.5;
+	var freqR = 3 * freqMul;
+	var freqG = 3.5 * freqMul;
+	var freqB = 2.5 * freqMul;
+	function genColor(red, green, blue) {
+		red = Math.round((1 << 8 - 1) * (1 - (Math.sin(freqR*red) + 1) / 2));
+		green = Math.round((1 << 8 - 1) * ((Math.sin(freqG*green) + 1) / 2));
+		blue = Math.round((1 << 8 - 1) * ((Math.sin(freqB*blue) + 1) / 2));
+		return [red, green, blue];
+	}
+
+	function colorToCSS(color) {
+		return "rgb(" + color[0] + "," + color[1] + "," + color[2] + ")";
+	}
+
+	function bgColor() {
+		var body = document.getElementsByTagName("body")[0].style;
+		var inc = (2 * Math.PI) / 128;
+		var r = 3;
+		var g = 2;
+		var b = 1;
+
+		return function() {
+			r += inc;
+			g += inc;
+			b += inc;
+			var color = genColor(r, g, b);
+			body.backgroundColor = colorToCSS(genColor(r, g, b));
+		};
+	}
+
+	function textColor() {
+		var inc = (2 * Math.PI) / 128;
+		var r = 1;
+		var g = 2;
+		var b = 3;
+		var rLast = r, gLast = g, bLast = b;
+
+		for(var i = 0; i < characters.length; ++i) {
+			var span = characters[i];
+			var color = genColor(r += inc, g += inc, b += inc);
+			span.backgroundColor = colorToCSS(color);
+			span.color = colorToCSS([255 - color[0], 255 - color[1], 255 - color[2]]);
+		}
+		r = rLast;
+		g = gLast;
+		b = bLast;
+		var next = h1.nextSibling;
+
+		return function() {
+			parent.removeChild(h1);
+
+			var color = genColor(r += inc, g += inc, b += inc);
+			characters[0].backgroundColor = colorToCSS(color);
+			characters[0].color = colorToCSS([255 - color[0], 255 - color[1], 255 - color[2]]);
+			for(var i = characters.length - 1; i > 0; --i) {
+				characters[i].backgroundColor = characters[i-1].backgroundColor;
+				characters[i].color = characters[i-1].color;
+			}
+			parent.insertBefore(h1, next);
+		};
+	}
+
+	setInterval(textColor(), 1000/60);
+	setInterval(bgColor(), 1000/60);
+
+</script>
+</body></html>

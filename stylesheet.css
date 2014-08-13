@@ -1,0 +1,32 @@
+body {
+}
+
+.problem {
+	border: 0px;
+	border-top: 1px;
+	border-style: solid;
+	border-color: black;
+	height: 1.3em;
+	clear: both;
+}
+
+.problem_control {
+	float: right;
+	clear: both;
+}
+
+#global_controls {
+	vertical-align: text-bottom;
+}
+
+#global_controls input {
+	float: right;
+}
+
+#progressbar {
+	height: 12px;
+	width: 100%;
+	margin-bottom: 5px;
+	float: left;
+	clear:both;
+}

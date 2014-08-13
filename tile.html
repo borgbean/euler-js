@@ -1,0 +1,259 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Test area</title>
+	<link rel="stylesheet" href="stylesheet.css">
+	<link rel="stylesheet" href="tilesheet.css">
+	<style id="tile_styles"></style>
+</head>
+<body>
+	<script src="jquery-2.1.1.min.js"></script>
+	<script src="jquery-ui-1.10.4.min.js"></script>
+	<script>
+	//assuming 500x500 for now
+		var tiles;
+		var empty;
+		var rows, cols;
+		var width, height;
+		var image;
+		function log(message) {
+			console.log(message);
+		}
+
+		//TODO check if tile we're mousing over is adjacent to empty, choose highlighting depending
+		//animate highlighting when mousing over
+
+		function gameEnd() {
+			var tiles = $("#tiles");
+			tiles.empty();
+			tiles.css("background", image);
+			tiles.css("background-size", "500px 500px");
+		}
+
+		function isAdjacent(tile1, tile2) {
+			var diff = tile2 - tile1;
+			if(Math.abs(diff) == 1) {  //check if it's next to the tile
+				var col = tile1 % cols;
+				if(col < (cols-1) && diff == 1) {
+					return true;
+				}
+				if(col > 0 && diff == -1) {
+					return true;
+				}
+			}
+			else if(Math.abs(diff) == cols) { //check if it's above or below
+				var row = Math.floor(tile1 / cols);
+				if(row < (rows-1) && diff == cols) {
+					return true;
+				}
+				if(row > 0 && diff == -cols) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		function getLeft(tile) {
+			<!-- var width = $("#tiles").width(); -->
+			var col = tile % cols;
+			return Math.ceil((width / cols) * col);
+		}
+
+		function getTop(tile) {
+			<!-- var height = $("#tiles").height(); -->
+			var row = Math.floor(tile / cols);
+			return Math.ceil((height / rows) * row);
+		}
+
+		function is_solved() {
+			for(var i = 0; i < tiles.length; ++i) {
+				if(tiles[i] != i) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		//takes the tile object directly
+		function moveTile(tile, noAnimation) {
+			if(noAnimation) {
+				/*tile.css({
+					left: getLeft(empty) + "px",
+					top: getTop(empty) + "px",
+				});*/
+				var style = tile[0];
+				style.left = getLeft(empty);
+				style.top = getTop(empty);
+				<!-- style.top = getTop(empty) + "px"; -->
+			} else {
+				tile.finish().animate({
+					left: getLeft(empty) + "px",
+					top: getTop(empty) + "px",
+					queue: false
+				}, 100);
+			}
+
+			var tilePos = tile[0].curPos;
+			var temp = tiles[empty];
+			tiles[empty] = tiles[tilePos];
+			tiles[tilePos] = temp;
+			tile[0].curPos = empty;
+			empty = tilePos;
+		}
+
+		function tileClicked(tile) {
+			var tile = $("#tile" + tile);
+			var tilePos = tile[0].curPos;
+			if(isAdjacent(tilePos, empty)) {
+				moveTile(tile);
+				if(is_solved()) {
+					gameEnd();
+				}
+			}
+		}
+
+		function tileHovered(tile) {
+			var tileDiv = $("#tile" + tile);
+			if(tileDiv.hasClass("hover")) {
+				tileDiv.removeClass("hover");
+				tileDiv.finish().animate({
+					borderTopColor : "black", borderBottomColor: "black", borderLeftColor : "black", borderRightColor: "black"
+				}, 150);
+			} else {
+				if(!isAdjacent(tileDiv[0].curPos, empty)) return;
+				tileDiv.addClass("hover");
+				tileDiv.finish().animate({
+					borderTopColor : "red", borderLeftColor : "red", borderRightColor : "red", borderBottomColor : "red"
+				}, 150);
+			}
+		}
+
+		function prepareTiles() {
+			var tilesDiv = $("#tiles");
+			width = tilesDiv.css("width"), height = tilesDiv.css("height");
+			width = parseInt(width.substring(0, width.length - 2));
+			height = parseInt(height.substring(0, height.length - 2));
+
+			var config = $("#config")[0];
+			cols = parseInt(config.dimX.value);
+			rows = parseInt(config.dimY.value);
+			if(cols <= 0 || rows <=0 || isNaN(cols) || isNaN(rows) || (cols * rows) > 2500) return;
+			image = "URL('" + config.imageURL.value + "')";
+
+			var html = "";
+			for(var row = 0; row < rows; ++row) {
+				for(var col = 0; col < cols && !(row == (rows-1) && col == (cols-1)); ++col) {
+					var idx = (col + (row*cols));
+					var position = "top: " + getTop(idx) + "px; left: " + getLeft(idx) + "px;";
+					var background = "background-position: -" + (100/cols)*col*cols + "% -" + (100/rows)*row*rows + "%; background-image: " + image;
+					var style = "style=\"" + position + " " + background + "\"";
+					var events = "onclick=\"tileClicked(" + idx + ")\" onmouseover=\"tileHovered(" + idx + ")\" onmouseout=\"tileHovered(" + idx + ")\"";
+					html += "<div class=\"tile\" id=\"tile" + idx + "\" " + style + " " + events + "></div>\n";
+				}
+			}
+
+			tilesDiv.empty();
+			tilesDiv.append(html);
+
+			tiles = new Array(cols * rows);
+			for(i = 0; i < (cols * rows) - 1; ++i) {
+				tiles[i] = i;
+				$("#tile" + i)[0].curPos = i;
+			}
+			tiles[(cols * rows) - 1] = (cols * rows) - 1;
+			empty = cols * rows - 1;
+
+			var tileStyles = $("#tile_styles");
+ 			$(".tile").css({
+				"background-size": width + "px " + height + "px",
+				"width": width / cols + "px",
+				"height": height / rows + "px"
+			});
+		}
+
+		function shuffle() {
+			$("#tiles").css("background", "");
+			prepareTiles();
+			var numTiles = tiles.length;
+
+			//detach tiles
+			var tilesCopy = new Array(numTiles);
+			for(var i = 0; i < numTiles; ++i) {
+				var tile = $("#tile" + i);
+				tilesCopy[i] = tile;
+				tile.detach(); //TODO this shouldn't be necessary anymore
+			}
+			//TODO move 10 or so tiles, in the callback do the detached tile moves, then at the end move 10 tiles again while attached
+
+			var moves = new Array(4);
+			for(var i = 0; i < 1000*500; ++i) {
+				var added = 0
+				if((empty - cols) >= 0 &&  isAdjacent(empty - cols, empty)) {
+					moves[added++] = empty - cols;
+				}
+				if(numTiles > (empty + cols) && isAdjacent(empty + cols, empty)) {
+					moves[added++] = empty + cols;
+				}
+				if((empty - 1) >= 0 && isAdjacent(empty - 1, empty)) {
+					moves[added++] = empty - 1;
+				}
+				if(numTiles > (empty + 1) && isAdjacent(empty + 1, empty)) {
+					moves[added++] = empty + 1;
+				}
+				var move = moves[Math.floor(Math.random() * added)];
+				moveTile(tilesCopy[tiles[move]], true);
+			}
+
+			//reattach
+			var tilesDiv = $("#tiles");
+			for(var i = 0; i < (numTiles - 1); ++i) {
+				var tile = tilesCopy[i];
+				if(tile[0].top !== 'undefined') {
+					tile[0].style.top = tile[0].top + "px";
+					tile[0].style.left = tile[0].left + "px";
+				}
+				tilesDiv.append(tilesCopy[i]);
+			}
+
+			for(var i = 0; i < 15; ++i) {
+				var moves = [];
+				if((empty - cols) >= 0 &&  isAdjacent(empty - cols, empty)) {
+					moves.push(empty - cols);
+				}
+				if(numTiles > (empty + cols) && isAdjacent(empty + cols, empty)) {
+					moves.push(empty + cols);
+				}
+				if((empty - 1) >= 0 && isAdjacent(empty - 1, empty)) {
+					moves.push(empty - 1);
+				}
+				if(numTiles > (empty + 1) && isAdjacent(empty + 1, empty)) {
+					moves.push(empty + 1);
+				}
+				var move = moves[Math.floor(Math.random() * moves.length)];
+				moveTile($("#tile" + tiles[move]));
+			}
+		}
+
+
+		$(document).ready(function() {
+			prepareTiles();
+		});
+	</script>
+	<form id="config">
+		<table>
+		<tr>
+		<!-- todo only accept positive integer input -->
+			<td>X</td><td><input type="text" class="dim" id="dimX" value="3" onchange="prepareTiles()"></td>
+			<td>Y</td><td><input type="text" class="dim" id="dimY" value="3" onchange="prepareTiles()"></td>
+		</tr>
+		<tr>
+			<td>Image</td><td colspan="3"><input type="text" id="imageURL" value="img/cat.jpg" onchange="prepareTiles()"></td>
+		</tr>
+		<tr>
+			<td colspan="3"><input type="button" value="Shuffle" onclick="shuffle()"></td>
+		</tr>
+		</table>
+	</form>
+	<div id="tiles"></div>
+</body>
+</html>

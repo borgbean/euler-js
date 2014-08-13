@@ -1,0 +1,41 @@
+body {
+}
+
+#config .dim {
+	width: 2em;
+}
+
+#tiles {
+	width: 500px;
+	height: 500px;
+	background-size: 500px 500px;
+	position: relative;
+}
+
+#tiles .tile {
+/* todo make dynamic */
+	/* background-size: 300px 300px; */
+	/* height: 100px; */
+	/* float: left; */
+	position: absolute;
+	/* background-image: url('img/cat.jpg'); */
+	/* border: -1px solid black; */
+	/* margin: -1px; */
+	
+	border: 1px solid black;
+}
+
+#tiles .tile:nth-child(even) {
+	/* margin-left: 50000px; */
+}
+
+#tiles .hover {
+	/* border: 1px solid red; */
+	/* border-top-width: 50px; */
+	/*border-width: 5px;
+	border-color: #FFFFFF;
+	margin: -4px; */
+	/* margin:  */
+	z-index: 1;
+}
+
