@@ -13,6 +13,7 @@
 	<script>
 		"use strict";
 		var eulerProblems = [];
+		var eulerRequests = [];
 		function log(message) {
 			console.log(message);
 		}
@@ -29,9 +30,25 @@
 					var result_span = $("#problem" + i + "_result");
 					var run = $("#problem" + i + "_run");
 					run.click(function(_, next, time) {
-						var start = new Date().getTime();
-						var result = eulerProblems[i]();
-						var elapsed = new Date().getTime() - start;
+						var blockingRequestData = null;
+						var start, result, elapsed;
+						if(eulerRequests[i]) {
+							try {
+								blockingRequestData = eulerRequests[i]();
+							} catch(Exception) {
+								elapsed = 0;
+								result = { result: Exception, expected: "not failing" };
+							}
+							if(blockingRequestData) {
+								start = new Date().getTime();
+								result = eulerProblems[i](blockingRequestData);
+								elapsed = new Date().getTime() - start;
+							}
+						} else {
+							start = new Date().getTime();
+							result = eulerProblems[i](blockingRequestData);
+							elapsed = new Date().getTime() - start;
+						}
 						if(time) {
 							time.elapsed += elapsed;
 						}
@@ -63,10 +80,10 @@
 			})(i);
 			document.getElementsByTagName("head")[0].appendChild(script);
 		}
-		var problem_count = 65;
+		var problem_count = 69;
 		var run_all = function(){alert("not ready");}; //empty function while waiting for document ready
-		var exclude = [];  // euler problems I skipped
-		var otherProblems = [197, 204, 206];  // other problems
+		var exclude = [66, 68];  // euler problems I skipped
+		var otherProblems = [96, 97, 104, 197, 204, 206];  // other problems
 		$(document).ready(function() {
 			var problems = $("#problems");
 			var progressBar = $("#progressbar");

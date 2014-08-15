@@ -1,29 +1,20 @@
-(function(eulerProblems) {
+(function(eulerProblems, eulerRequests) {
 	"use strict";
+
+	eulerRequests[54] = function() {
+		return GET("euler/files/poker.txt");
+	};
+
+
 	var ranks = { 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 7: 6, 8: 7, 9: 8, T: 9, J: 10, Q: 11, K: 12, A: 13 };
-	eulerProblems[54] = function() {
+	eulerProblems[54] = function(input) {
 		var hands = populateHands();
 
 		var p1Wins = 0;
 		var p2Wins = 0;
 		var numHands = hands.length;
 
-
-		var pokerFile = new XMLHttpRequest();
-		pokerFile.ontimeout = function() {
-			alert("Timed out");
-		};
-		try {
-			pokerFile.open("GET", "euler/files/poker.txt", false);
-			pokerFile.send();
-		} catch(NetworkError) {
-			return { result: "Failed to read input!", expected: "Not failing" };
-		}
-		if(pokerFile.status != 200) {
-			return { result: "Failed to read input!", expected: "Not failing" };
-		}
-
-		var input = JSON.parse(pokerFile.responseText).split("\n");
+		input = JSON.parse(input).split("\n");
 
 		for(var lineIdx = input.length - 1; lineIdx >= 0; --lineIdx) {
 			var line = input[lineIdx].split(" ");
@@ -269,4 +260,4 @@
 		});
 		return hands;
 	}
-})(eulerProblems);
+})(eulerProblems, eulerRequests);

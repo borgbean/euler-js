@@ -53,7 +53,6 @@ function isPrime(primes, num) {
 
 var l10 = Math.log(10);
 function isPandigital(num) {
-	num = num;
 	var digits = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 	var len = Math.ceil(Math.log(num) / l10);
 	do {
@@ -66,3 +65,19 @@ function isPandigital(num) {
 	return true;
 }
 
+function GET(url) {
+	var file = new XMLHttpRequest();
+	file.ontimeout = function() {
+		throw "Timed out!";
+	};
+	try {
+		file.open("GET", url, false);
+		file.send();
+	} catch(NetworkError) {
+		throw "Failed to read input!";
+	}
+	if(file.status != 200) {
+		throw "Failed to read input";
+	}
+	return file.responseText;
+}

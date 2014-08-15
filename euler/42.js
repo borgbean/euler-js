@@ -1,22 +1,14 @@
-(function(eulerProblems) {
+(function(eulerProblems, eulerRequests) {
 	"use strict";
 	var triangleNumbers;
-	eulerProblems[42] = function() {
+
+	eulerRequests[42] = function() {
+		return GET("euler/files/words.txt");
+	};
+
+	eulerProblems[42] = function(input) {
 		var count = 0;
-		var wordsRequest = new XMLHttpRequest();
-		wordsRequest.ontimeout = function() {
-			alert("Timed out");
-		};
-		try {
-			wordsRequest.open("GET", "euler/files/words.txt", false);
-			wordsRequest.send();
-		} catch(NetworkError) {
-			return { result: "Failed to read input! ", expected: "Not failing" };
-		}
-		if(wordsRequest.status != 200) {
-			return { result: "Failed to read input!", expected: "Not failing" };
-		}
-		var input = JSON.parse(wordsRequest.responseText);
+		input = JSON.parse(input);
 		var aIdx = "A".charCodeAt(0) - 1;
 
 		triangleNumbers = [];
@@ -59,4 +51,4 @@
 			}
 		}
 	}
-})(eulerProblems);
+})(eulerProblems, eulerRequests);
