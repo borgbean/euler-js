@@ -33,13 +33,15 @@
 						var blockingRequestData = null;
 						var start, result, elapsed;
 						if(eulerRequests[i]) {
+							var succeeded = false;
 							try {
 								blockingRequestData = eulerRequests[i]();
+								succeeded = true;
 							} catch(Exception) {
 								elapsed = 0;
 								result = { result: Exception, expected: "not failing" };
 							}
-							if(blockingRequestData) {
+							if(succeeded) {
 								start = new Date().getTime();
 								result = eulerProblems[i](blockingRequestData);
 								elapsed = new Date().getTime() - start;

@@ -10,6 +10,7 @@
 	eulerProblems[96] = function(input) {
 		input = input.trim().split("\n");
 		input.push("");
+		// var input = "hello\n000000000\n000000000\n000000000\n000000000\n000000000\n000000000\n000000000\n000000000\n000000000\nfdsa".split("\n");
 		var numLines = input.length;
 		var sum = 0;
 		var intParser = function(x) { return parseInt(x, 10); };
@@ -79,91 +80,17 @@
 		}
 	}
 
-	function verify(puzzle) {
-		for(var row = 0; row < width; ++row) {
-			for(var col = 0; col < width; ++col) {
-				if(puzzle[row][col] === 0) {
-					continue;
-				}
-				var number = puzzle[row][col];
-
-				//eliminate numbers in this row
-				for(var j = 0; j < width; ++j) {
-					if(j !== col && puzzle[row][j] === number) {
-						return false;
-					}
-				}
-				//eliminate numbers in this column
-				for(var i = 0; i < width; ++i) {
-					if(i !== row && puzzle[i][col] === number) {
-						return false;
-					}
-				}
-
-				var rowWindow = row - (row % 3);
-				var colWindow = col - (col % 3);
-
-				//eliminate numbers in this group of 9
-				for(var i = rowWindow, iMax = rowWindow+3; i < iMax; ++i) {
-					for(var j = colWindow, jMax = colWindow+3; j < jMax; ++j) {
-						if(!(i === row && j === col) && puzzle[i][j] === number) {
-							return false;
-						}
-					}
-				}
-			}
-		}
-		return true;
-	}
-
-	function checkBeforeCell(puzzle, row, col) {
-		var columns = puzzle[row].length;
-		var rows = puzzle.length;
-
-		var number = puzzle[row][col];
-
-		//eliminate numbers in this row
-		for(var j = 0; j < col && j < columns; ++j) {
-			if(number === puzzle[row][j]) {
-				return false;
-			}
-		}
-		//eliminate numbers in this column
-		for(var i = 0; i < rows && i < row; ++i) {
-			if(number === puzzle[i][col]) {
-				return false;
-			}
-		}
-
-		var rowWindow = row - (row % 3);
-		var colWindow = col - (col % 3);
-
-		//eliminate numbers in this group of 9
-		for(var i = row, iMax = row; i <= iMax; ++i) {
-			for(var j = col, jMax = col+3; j < jMax && (j < col || i < row); ++j) {
-				if(number === puzzle[i][j]) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
 	function fillInBlanks(puzzle) {
 		var eliminationMatrix;
 
 		for(;;) {
 			eliminationMatrix = [];
+			var didSomething = false;
+			var solved = true;
 			for(var row = 0; row < width; ++row) {
 				eliminationMatrix.push([]);
 				for(var col = 0; col < width; ++col) {
 					eliminationMatrix[row][col] = eliminate(puzzle, row, col);
-				}
-			}
-			var didSomething = false;
-			var solved = true;
-			for(var row = 0; row < width; ++row) {
-				for(var col = 0; col < width; ++col) {
 					if(puzzle[row][col] !== 0) {
 						continue;
 					}
@@ -184,11 +111,9 @@
 							}
 						}
 						if(ans !== null) {
+							eliminationMatrix[row][col] = false;
 							puzzle[row][col] = ans;
 							didSomething = true;
-							if(!checkBeforeCell(puzzle, row, col)) {
-								return false;
-							}
 						}
 						if(!foundSomething) {
 							return false;
@@ -215,15 +140,13 @@
 		for(var i = 1; i <= width; ++i) {
 			possibilities.push(true);
 		}
-		var columns = puzzle[row].length;
-		var rows = puzzle.length;
 
 		//eliminate numbers in this row
-		for(var j = 0; j < columns; ++j) {
+		for(var j = 0; j < width; ++j) {
 			possibilities[puzzle[row][j]] = false;
 		}
 		//eliminate numbers in this column
-		for(var i = 0; i < rows; ++i) {
+		for(var i = 0; i < width; ++i) {
 			possibilities[puzzle[i][col]] = false;
 		}
 
