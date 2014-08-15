@@ -62,9 +62,9 @@
 		}
 
 
-		var mat = eliminationMatrix[minIdx[0]][minIdx[1]];
+		var possibilities = eliminationMatrix[minIdx[0]][minIdx[1]];
 		for(var idx = 1; idx <= width; ++idx) {
-			if(!mat[idx]) {
+			if(!possibilities[idx]) {
 				continue;
 			}
 			var puzzleCopy = [];
@@ -133,7 +133,7 @@
 
 	function eliminate(puzzle, row, col) {
 		if(puzzle[row][col] !== 0) {
-			return false;
+			return [];
 		}
 		var possibilities = [];
 		possibilities.push(false); //0
