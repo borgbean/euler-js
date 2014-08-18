@@ -25,63 +25,73 @@
 			var controls = "<span class=\"problem_control\"><input type=\"button\" value=\"Run\" id=\"problem" + i + "_run\"><\/span>";
 			problems.append("<div class=\"problem\" id=\"problem" + i + "\">Problem " + i + ":" + controls + "<br><span id=\"problem" + i + "_result\"><\/span><\/div>");
 			(function(i) {
-				script.onload = function() {
-					var problem_div = $("#problem" + i);
-					var result_span = $("#problem" + i + "_result");
-					var run = $("#problem" + i + "_run");
-					run.click(function(_, next, time) {
-						var blockingRequestData = null;
-						var start, result, elapsed;
+				var loaded = false;
+				var problem_div = $("#problem" + i);
+				var result_span = $("#problem" + i + "_result");
+				var run = $("#problem" + i + "_run");
+				run.click(function(_, next, time) {
+					var blockingRequestData = null;
+					var start, result, elapsed;
+					if(loaded) {
 						if(eulerRequests[i]) {
+							var success = false;
 							try {
 								blockingRequestData = eulerRequests[i]();
-								start = new Date().getTime();
-								result = eulerProblems[i](blockingRequestData);
-								elapsed = new Date().getTime() - start;
+								success = true;
 							} catch(Exception) {
 								elapsed = 0;
 								result = { result: Exception, expected: "not failing" };
+							}
+							if(success) {
+								start = new Date().getTime();
+								result = eulerProblems[i](blockingRequestData);
+								elapsed = new Date().getTime() - start;
 							}
 						} else {
 							start = new Date().getTime();
 							result = eulerProblems[i](blockingRequestData);
 							elapsed = new Date().getTime() - start;
 						}
-						if(time) {
-							time.elapsed += elapsed;
+					} else {
+						elapsed = 0;
+						result = {result: "not yet loaded", expected: "clicking while loaded"};
+					}
+					if(time) {
+						time.elapsed += elapsed;
+					}
+					if(result_span.text() == "") {
+						$.when(problem_div.height($(problem_div).height() + 5)
+						.animate({height: ($(problem_div).height() * 1.55) + "px"}, {duration: 50})).done(next);
+					} else {
+						if(next) {
+							next();
 						}
-						if(result_span.text() == "") {
-							$.when(problem_div.height($(problem_div).height() + 5)
-							.animate({height: ($(problem_div).height() * 1.55) + "px"}, {duration: 50})).done(next);
-						} else {
-							if(next) {
-								next();
-							}
-						}
-						result_span.text("Result: " + result.result);
-						if(result.result != result.expected) {
-							problem_div.css("color", "red");
-							result_span.append("; Expected: " + result.expected);
-						}
-						else {
-							problem_div.css("background-color", "rgba(0,255,0,.1)");
-						}
-						var timeScaler = Math.pow(.8 + (elapsed / 1000), 4) / 2;
-						if((elapsed / 1000) < .05) {
-							timeScaler = 0;
-						}
-						var timeColor = "color: rgb(" + Math.round(timeScaler * 255) + ",0,0)";
-						result_span.append("; took <span style='" + timeColor + "'>" + elapsed / 1000 + " seconds<\/span>.");
-					});
-
+					}
+					result_span.text("Result: " + result.result);
+					if(result.result != result.expected) {
+						problem_div.css("color", "red");
+						result_span.append("; Expected: " + result.expected);
+					} else {
+						problem_div.css("color", "");
+						problem_div.css("background-color", "rgba(0,255,0,.1)");
+					}
+					var timeScaler = Math.pow(.8 + (elapsed / 1000), 4) / 2;
+					if((elapsed / 1000) < .05) {
+						timeScaler = 0;
+					}
+					var timeColor = "color: rgb(" + Math.round(timeScaler * 255) + ",0,0)";
+					result_span.append("; took <span style='" + timeColor + "'>" + elapsed / 1000 + " seconds<\/span>.");
+				});
+				script.onload = function() {
+					loaded = true;
 				}
 			})(i);
 			document.getElementsByTagName("head")[0].appendChild(script);
 		}
-		var problem_count = 69;
+		var problem_count = 70;
 		var run_all = function(){alert("not ready");}; //empty function while waiting for document ready
 		var exclude = [66, 68];  // euler problems I skipped
-		var otherProblems = [96, 97, 104, 197, 204, 206];  // other problems
+		var otherProblems = [71, 73, 76, 77, 78, 96, 97, 99, 104, 197, 204, 206, 243];  // other problems
 		$(document).ready(function() {
 			var problems = $("#problems");
 			var progressBar = $("#progressbar");

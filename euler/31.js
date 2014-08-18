@@ -10,21 +10,14 @@
 	};
 
 	function ways_to_get(amount, first_coin) {
-		if((first_coin + 1) == coins.length || amount == coins[first_coin]) {
-			if((amount % coins[first_coin]) === 0) {
-				return 1;
-			}
-			return 0;
-		}
 		var coin_size = coins[first_coin];
-
 		var ways = 0;
 
 		if((amount % coin_size) === 0) {
 			++ways;
 		}
 
-		if(amount < coins[first_coin + 1]) return ways;
+		if(first_coin+1 === coins.length || amount < coins[first_coin + 1]) return ways;
 
 		var i = coins[first_coin + 1] + ((amount - coins[first_coin + 1]) % coin_size);
 
