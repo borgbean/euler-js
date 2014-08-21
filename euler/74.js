@@ -10,22 +10,24 @@
 			digitFacts[i] = fact(i);
 		}
 
+		var arr = [0,0,0,0,0,0,0,0,0,0];
 		var count = 0;
 		for(var i = 1; i < 1e6; ++i) {
 			var length = 0;
 			var newFacts = [];
-			var next = i;
+			var next = digitCountReuse(i, arr);
+			var nextDigits = compactDigitCount(next);
 
 			while(true) {
-				if(typeof facts[next] !== 'undefined') {
-					length += facts[next];
+				if(typeof facts[nextDigits] !== 'undefined') {
+					length += facts[nextDigits];
 					_fillInFacts(newFacts, length);
 					if(length === 60) {
 						++count;
 					}
 					break;
 				}
-				if(newFacts.indexOf(next) !== -1) {
+				if(newFacts.indexOf(nextDigits) !== -1) {
 					if(length === 60) {
 						++count;
 					}
@@ -33,18 +35,41 @@
 					break;
 				}
 				++length;
-				newFacts.push(next);
-				next = digitFact(next.toString());
+				newFacts.push(nextDigits);
+				next = digitCountReuse(digitFact(next), next);
+				nextDigits = compactDigitCount(next);
 			}
 		}
 
 		return { result: count, expected: 402 };
 	};
 
+	function digitCountReuse(num, dig) {
+		for(var i = 0; i < 10; ++i) {
+			dig[i] = 0;
+		}
+		while(num > 0) {
+			++dig[num % 10];
+			num = (num / 10) | 0;
+		}
+		return dig;
+	} 
+
+	function compactDigitCount(dig) {
+		var order = 1;
+
+		var newNum = 0;
+		for(var i = 0; i < 10; ++i) {
+			newNum += order * dig[i];
+			order *= 10;
+		}
+		return newNum;
+	} 
+
 	function digitFact(num) {
 		var sum = 0;
-		for(var i = num.length - 1; i >= 0; --i) {
-			sum += digitFacts[num[i]];
+		for(var i = 0; i < 10; ++i) {
+			sum += digitFacts[i] * num[i];
 		}
 		return sum;
 	}
