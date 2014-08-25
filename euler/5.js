@@ -1,18 +1,24 @@
 (function(eulerProblems) {
 	"use strict";
-	eulerProblems[5] = function() {
-		var i = 20;
-		var divisible_by = [19, 18, 17, 16, 15, 14, 13, 12, 11];
-		var len = divisible_by.length;
-		while(true) {
-			i += 20;
-			var j;
-			for(j = 0; j < len; ++j) {
-				if((i % divisible_by[j]) !== 0) break;
-			}
-			if(j == len) break;
 
+	eulerProblems[5] = function() {
+		var primes = sieve(20);
+		var numPrimes = primes.length;
+
+		var num = 1;
+
+		for(var i = 0; i < numPrimes; ++i) {
+			var factor = 1;
+			while(factor <= 20) {
+				factor *= primes[i];
+			}
+			num *= factor / primes[i];
 		}
-		return { result: i, expected: 232792560 };
+
+		return { result: num, expected: 232792560 };
 	};
+
+	function increase(num) {
+
+	}
 })(eulerProblems);
