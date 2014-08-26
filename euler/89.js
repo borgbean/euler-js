@@ -26,8 +26,6 @@
 			var value = readValue(numeralVals, curInput);
 			var out = writeValue(numerals, value);
 			sum += curInput.length - out.length;
-			log(value + " : " + out);
-			log(curInput.length - out.length);
 		}
 
 		return { result: sum, expected: 743 };
