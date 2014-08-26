@@ -4,6 +4,8 @@
 		var i = 1;
 		var minDiff = null;
 		var pen2 = 1;
+		var pens = [];
+
 		while(++i) {
 			var lastPen = pen2;
 			pen2 = pen(i);
@@ -35,7 +37,7 @@
 	};
 
 	function isPentagonal(num) {
-		return (((1 + Math.sqrt(1 + 24*num))/6 % 1)) === 0;
+		return (((1 + Math.sqrt(1 + 24*num))/6) % 1) === 0;
 	}
 
 	function pen(i) {

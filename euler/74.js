@@ -31,7 +31,7 @@
 					if(length === 60) {
 						++count;
 					}
-					_fillInFacts(newFacts, newFacts.length);
+					_fillInFacts(newFacts, length);
 					break;
 				}
 				++length;
