@@ -7,6 +7,7 @@ BinaryHeap.prototype = {
   push: function(element) {
     // Add the new element to the end of the array.
     this.content.push(element);
+    element.__heapIdx = this.content.length - 1;
     // Allow it to bubble up.
     this.bubbleUp(this.content.length - 1);
   },
@@ -19,6 +20,7 @@ BinaryHeap.prototype = {
     // If there are any elements left, put the end element at the
     // start, and let it sink down.
     if (this.content.length > 0) {
+      end.__heapIdx = 0;
       this.content[0] = end;
       this.sinkDown(0);
     }
@@ -27,23 +29,19 @@ BinaryHeap.prototype = {
 
   remove: function(node) {
     var length = this.content.length;
-    // To remove a value, we must search through the array to find
-    // it.
-    for (var i = 0; i < length; i++) {
-      if (this.content[i] != node) continue;
-      // When it is found, the process seen in 'pop' is repeated
-      // to fill up the hole.
-      var end = this.content.pop();
-      // If the element we popped was the one we needed to remove,
-      // we're done.
-      if (i == length - 1) break;
-      // Otherwise, we replace the removed element with the popped
-      // one, and allow it to float up or sink down as appropriate.
-      this.content[i] = end;
-      this.bubbleUp(i);
-      this.sinkDown(i);
-      break;
-    }
+    var i = node.__heapIdx;
+    // When it is found, the process seen in 'pop' is repeated
+    // to fill up the hole.
+    var end = this.content.pop();
+    // If the element we popped was the one we needed to remove,
+    // we're done.
+    if (i == length - 1) return;
+    // Otherwise, we replace the removed element with the popped
+    // one, and allow it to float up or sink down as appropriate.
+    this.content[i] = end;
+    end.__heapIdx = i;
+    this.bubbleUp(i);
+    this.sinkDown(i);
   },
 
   size: function() {
@@ -65,6 +63,8 @@ BinaryHeap.prototype = {
 
       // Otherwise, swap the parent with the current element and
       // continue.
+      element.__heapIdx = parentN;
+      parent.__heapIdx = n;
       this.content[parentN] = element;
       this.content[n] = parent;
       n = parentN;
@@ -104,9 +104,31 @@ BinaryHeap.prototype = {
       if (swap == null) break;
 
       // Otherwise, swap and continue.
+      this.content[swap].__heapIdx = n;
+      element.__heapIdx = swap;
       this.content[n] = this.content[swap];
       this.content[swap] = element;
       n = swap;
+    }
+  }, 
+
+  decreaseKey: function(node) {
+    var i = node.__heapIdx;
+
+    var elem = this.content[i];
+    var score = this.scoreFunction(elem);
+    var parentIdx = Math.floor((i - 1)  / 2);
+    var parent = this.content[parentIdx];
+
+    while (parentIdx >= 0) {
+      if(this.scoreFunction(parent) <= score) {
+        break;
+      }
+      parent.__heapIdx = i;
+      elem.__heapIdx = parentIdx;
+      this.content[i] = parent;
+      this.content[parentIdx] = elem;
+      i = parent;      
     }
   }
 };

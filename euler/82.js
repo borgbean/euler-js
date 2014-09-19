@@ -5,66 +5,115 @@
 		return GET("euler/files/p082_matrix.txt");
 	};
 
+	var count;
 	eulerProblems[82] = function(input) {
-		var memoized_paths = [];
 		input = input.trim().split('\n');
-		for(var i = input.length - 1; i >= 0; --i) {
-			input[i] = input[i].split(',');
-			input[i] = input[i].map(function(x) {return parseInt(x, 10);});
-			memoized_paths.push(new Array(input[i].length));
+		count = input.length;
+		var minVal = Infinity;
+		for(var row = count - 1; row >= 0; --row) {
+			input[row] = input[row].split(',');
+			input[row] = input[row].map(function(x) {return parseInt(x, 10);});
+			for(var col = count - 1; col >= 0; --col) {
+				if(input[row][col] < minVal) {
+					minVal = input[row][col];
+				}
+				input[row][col] = new Vertex(input, row, col);
+			}
 		}
-
-		var ans = traverse(input, 0, 0, memoized_paths, 0, -1);
-
-		return { result: ans, expected: 260324 };
+		var minSum = Infinity;
+		for(var i = 0; i < count; ++i) {
+			var sum = aStar(input, i, minSum, minVal);
+			if(sum < minSum) {
+				minSum = sum;
+			}
+			for(var row = 0; row < count; ++row) {
+				for(var col = 0; col < count; ++col) {
+					input[row][col].pathSum = -1;
+				}
+			}
+		}
+		return { result: minSum, expected: 260324 };
 	};
 
-	function traverse(input, row, col, memoized_paths, costSoFar, best) {
-		if(row < 0 || row >= input.length || col >= input[row].length || (best > 0 && (costSoFar + input[row][col]) >= best)) {
-			return false;
+	function Vertex(input, row, col) {
+		this.row = row;
+		this.col = col;
+		this.neighbors = [];
+		this.input = input;
+		//right
+		if(col < (count-1)) {
+			this.neighbors.push([row, col+1]);
 		}
-		if(memoized_paths[row][col] !== undefined) { 
-			return memoized_paths[row][col];
+		//down
+		if(row < (count-1)) {
+			this.neighbors.push([row+1, col]);
 		}
-		
-		var sum = input[row][col];
-		if(row === (input.length - 1) && col === (input.length - 1)) {
-			return sum;
+		//up
+		if(row > 0) {
+			this.neighbors.push([row-1, col]);
 		}
-		var down = traverse(input, row+1, col, memoized_paths, costSoFar + sum, best);
-		if(down !== false) {
-			if(best < 0 || (down + sum + costSoFar) < best) {
-				best = down + sum + costSoFar;
+		this.cost = input[row][col];
+		this.pathSum = -1;
+		this.guessedCost = -1;
+
+		this.neighborList = null;
+
+	}
+	Vertex.prototype.getNeighbors = function() {
+		if(!this.neighborList) {
+			var list = [];
+			for(var i = this.neighbors.length - 1; i >= 0; --i) {
+				list.push(this.input[this.neighbors[i][0]][this.neighbors[i][1]]);
 			}
-		} else {
-			down = Infinity;
+			this.neighborList = list
 		}
-		var right = traverse(input, row, col+1, memoized_paths, costSoFar + sum, best);
-		if(right !== false) {
-			if(best < 0 || (right + sum + costSoFar) < best) {
-				best = right + sum + costSoFar;
-			}
-		} else {
-			right = Infinity;
+		return this.neighborList;
+	}
+
+	function aStar(input, row, minSum, minVal) {
+		var heap = new BinaryHeap(function(vertex) {return vertex.guessedCost;});
+		heap.push(input[row][0]);
+		input[row][0].pathSum = input[row][0].cost;
+
+		var vertex = false;
+		while(vertex === false) {
+			vertex = aStarHelper(heap, minSum, minVal);
 		}
-		var up = traverse(input, row-1, col, memoized_paths, costSoFar + sum, best);
-		if(up !== false) {
-			if(best < 0 || (up + sum + costSoFar) < best) {
-				best = up + sum + costSoFar;
-			}
-		} else {
-			up = Infinity;
+		if(vertex === null) {
+			return Infinity;
+		}
+		return vertex.pathSum;
+	}
+	function aStarHelper(heap, minSum, minVal) {
+		var vertex = heap.pop();
+		if(!vertex) {
+			return null;
+		}
+		if(vertex.col === (count-1)) {
+			return vertex;
+		}
+		if(vertex.pathSum > minSum) {
+			return null;
 		}
 
-		var paths = [right, up, down];
-		paths.sort();
+		var neighbors = vertex.getNeighbors();
+		for(var i = neighbors.length - 1; i >= 0; --i) {
+			var neighbor = neighbors[i];
+			var sum = vertex.pathSum + neighbor.cost;
+			if(neighbor.pathSum < 0) {
+				if(sum > minSum) {
+					continue;
+				}
+				neighbor.pathSum = sum;
+				neighbor.guessedCost = sum + minVal * neighbor.col - (count-1);
+				heap.push(neighbor);
+			} else if(sum < neighbor.pathSum) {
+				neighbor.pathSum = sum;
 
-		if(paths[0] === Infinity) {
-			return false;
+				neighbor.guessedCost = sum + minVal * neighbor.col - (count-1);
+				heap.decreaseKey(neighbor);
+			}
 		}
-		sum += paths[0];
-
-		memoized_paths[row][col] = sum;
-		return sum;
+		return false;
 	}
 })(eulerProblems, eulerRequests);
