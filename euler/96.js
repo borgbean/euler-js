@@ -9,25 +9,19 @@
 
 	eulerProblems[96] = function(input) {
 		input = input.trim().split("\n");
-		input.push("");
-		// var input = "hello\n000000000\n000000000\n000000000\n000000000\n000000000\n000000000\n000000000\n000000000\n000000000\nfdsa".split("\n");
 		var numLines = input.length;
 		var sum = 0;
+
 		var intParser = function(x) { return parseInt(x, 10); };
-		var stuff = input.reduce(function(prev, cur, idx) {
-			if(idx === 0) {
-				return prev;
+		//10 lines per puzzle (ignore first line)
+		for(var i = 1; i < numLines; i += 10) {
+			var puzzle = [];
+			for(var j = i, max = i+9; j < max; ++j) {
+				puzzle.push(input[j].trim().split('').map(intParser));
 			}
-			if((idx % 10) === 0) {
-				var puzzle = solve(prev);
-				sum += puzzle[0][0]*100 + puzzle[0][1]*10 + puzzle[0][2];
-				return [];
-			}
-			prev[(idx-1) % 10] = cur.trim().split("").map(intParser);
-			return prev;
-
-		}, []);
-
+			var solution = solve(puzzle);
+			sum += solution[0][0]*100 + solution[0][1]*10 + solution[0][2];
+		}
 
 		return {result: sum, expected: 24702};
 	};
@@ -55,7 +49,7 @@
 					done = true;
 					break;
 				}
-				if(minIdx === null || cur.length < eliminationMatrix[minIdx[0]][minIdx[1]].length) {
+				if(cur.length > 0 && (minIdx === null || cur.length < eliminationMatrix[minIdx[0]][minIdx[1]].length)) {
 					minIdx = [row, col];
 				}
 			}
@@ -83,7 +77,7 @@
 	function fillInBlanks(puzzle) {
 		var eliminationMatrix;
 
-		for(;;) {
+		while(1) {
 			eliminationMatrix = [];
 			var didSomething = false;
 			var solved = true;
@@ -101,13 +95,13 @@
 						var ans = null;
 						for(var i = possibilities.length - 1; i >= 1; --i) {
 							if(possibilities[i]) {
-								foundSomething = true;
-								if(ans !== null) {
+								if(foundSomething) {
 									ans = null;
 									break;
 								} else {
 									ans = i;
 								}
+								foundSomething = true;
 							}
 						}
 						if(ans !== null) {

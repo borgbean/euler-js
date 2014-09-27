@@ -81,3 +81,31 @@ function GET(url) {
 	}
 	return file.responseText;
 }
+
+// binary search slice of a list starting at start and ending at end, returning an element greater than your query when possible, if there is not a match.
+function binarySearch(start, end, findme, list, cmp) {
+	var left = start;
+	var right = end;
+	var mid = (left + right) >> 1;
+	if(!cmp) {
+		cmp = function(a, b) { return a - b; };
+	}
+
+	while(left < right) {
+		//list[mid] > findMe
+		var diff = cmp(list[mid], findme);
+		if(diff < 0) {
+			// too far left
+			var left = mid + 1;
+			var mid = (mid + right) >> 1;
+		} else {
+			//too far right
+			var right = mid - 1;
+			var mid = (left + mid) >> 1;
+		}
+	}
+	if(mid < right && cmp(list[mid], findme) < 0) {
+		++mid;
+	}
+	return mid;
+}

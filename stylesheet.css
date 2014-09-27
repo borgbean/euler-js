@@ -1,32 +1,82 @@
 body {
+	margin: 0;
 }
 
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+display: none !important;
+}
+
+#problems {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
 .problem {
+	padding: 1px 0px;
+	padding-left: 10px;
 	border: 0px;
 	border-top: 1px;
 	border-style: solid;
 	border-color: black;
-	height: 1.3em;
-	clear: both;
+}
+.problem:last-of-type {
+	border-bottom: 1px solid black;
+}
+@-webkit-keyframes incorrect {
+	0% {background-color: rgba(255, 255, 255, 1);}
+	100% {background-color: rgba(255, 0, 0, .15);}
+}
+@keyframes incorrect {
+	0% {background-color: rgba(255, 255, 255, 1);}
+	100% {background-color: rgba(255, 0, 0, .15);}
+}
+.problem_error {
+	background-color: rgba(255, 0, 0, .15);
+	-webkit-animation: incorrect 0.25s;
+	animation: incorrect 0.25s;
 }
 
+@-webkit-keyframes correct {
+	0% {background-color: rgba(255, 255, 255, 1);}
+	100% {background-color: rgba(0, 255, 0, .15);}
+}
+@keyframes correct {
+	0% {background-color: rgba(255, 255, 255, 1);}
+	100% {background-color: rgba(0, 255, 0, .15);}
+}
+.problem_correct {
+	background: rgba(0, 255, 0, .15);
+	-webkit-animation: correct 0.25s;
+	animation: correct 0.25s;
+}
 .problem_control {
 	float: right;
-	clear: both;
 }
 
 #global_controls {
-	vertical-align: text-bottom;
+	/*vertical-align: text-bottom;*/
+	/*height: 30px;*/
+	padding-top: 3px;
+	display: table;
+	white-space: nowrap;
+	padding: 3px 10px;
 }
 
-#global_controls input {
-	float: right;
+#global_controls * {
+	vertical-align: middle;
+}
+#total_time {
+	display: table-cell;
+	min-width: 3.25em;
+	padding-right: 3px;
+}
+
+#run_all {
+	display: table-cell;
 }
 
 #progressbar {
-	height: 12px;
+	height: 1em;
+	display: table-cell;
 	width: 100%;
-	margin-bottom: 5px;
-	float: left;
-	clear:both;
 }
