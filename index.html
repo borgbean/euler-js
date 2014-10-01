@@ -7,24 +7,24 @@
 </head>
 <body data-ng-app="eulerProblems" data-ng-controller="problemController">
 	<div id="global_controls">
-		<span id="total_time">{{ problemsElapsed }}ms</span>
+		<span id="total_time" data-ng-cloak>{{ problemsElapsed }}ms ({{ problemsDone }}/{{ problems.length }})</span>
 		<div id="progressbar"></div>
 		<input type="button" id="run_all" value="Run all" data-ng-click="runAll()">
 	</div>
 	<ul id="problems" data-ng-cloak>
-		<li class="problem" data-ng-repeat="problem in problems" data-ng-class="{problem_error: problem.error !== null || (problem.result !== null && problem.result.result != problem.result.expected), problem_correct: problem.result !== null}">
+		<li class="problem" data-ng-repeat="problem in problems" data-ng-class="{problem_error: problem.correct !== null && !problem.correct}" data-ng-style="{ background: problem.correct ? 'rgba(0, 255, 0, ' + (.05 + Math.pow(2, .92 + problem.elapsed/1000)-1.8) + ')' : '' }">
 			<span id="problem_control"><input type="button" value="Run" data-ng-click="runProblem(problem)"></span>
 			Problem {{ problem.number }}:
 			<span id="error" data-ng-hide="problem.error===null">
 				<br>
-				&#x2717; {{ problem.error }}
+				&#x2717; {{ problem.error.toString() }}
 			</span>
 			<span id="answer" data-ng-hide="problem.result===null">
 				<br>
 				{{ problem.result.result == problem.result.expected ? '&#x2713;' : '&#x2717;' }}
 				Result: {{ problem.result.result }};
 				Expected: {{ problem.result.expected }}; 
-				Elapsed: {{ problem.elapsed / 1000 }}
+				Elapsed: {{ problem.elapsed / 1000 }}s
 			</span>
 		</li>
 	</ul>

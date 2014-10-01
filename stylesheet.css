@@ -32,8 +32,8 @@ display: none !important;
 }
 .problem_error {
 	background-color: rgba(255, 0, 0, .15);
-	-webkit-animation: incorrect 0.25s;
-	animation: incorrect 0.25s;
+/*	-webkit-animation: incorrect 0.25s;
+	animation: incorrect 0.25s;*/
 }
 
 @-webkit-keyframes correct {
@@ -44,11 +44,12 @@ display: none !important;
 	0% {background-color: rgba(255, 255, 255, 1);}
 	100% {background-color: rgba(0, 255, 0, .15);}
 }
-.problem_correct {
+/*.problem_correct {
 	background: rgba(0, 255, 0, .15);
-	-webkit-animation: correct 0.25s;
-	animation: correct 0.25s;
-}
+	/*-webkit-animation: correct 0.25s;
+	animation: correct 0.25s;*/
+	/*
+}*/
 .problem_control {
 	float: right;
 }

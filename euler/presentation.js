@@ -2,13 +2,13 @@ var euler = angular.module('eulerProblems', [])
 
 
 var problemCount = 83;
-var exclude = [75, 80];  // euler problems I skipped
+var exclude = [80];  // euler problems I skipped
 var otherProblems = [89, 96, 97, 99, 104, 187, 197, 204, 206, 243];  // other problems
 var eulerProblems = [];
 var eulerRequests = [];
 euler.controller('problemController', ['$scope', function ($scope) {
 	$scope.runProblem = function(problem, addToElapsed) {
-		problem.runProblem().then(function() {
+		return problem.runProblem().then(function() {
 			if(addToElapsed) {
 				$scope.problemsElapsed += problem.elapsed;
 			}
@@ -18,14 +18,22 @@ euler.controller('problemController', ['$scope', function ($scope) {
 		});
 	};
 
+	$scope.Math = Math;
 	$scope.problemsElapsed = 0;
+	$scope.problemsDone = 0;
 	var progressBar = $("#progressbar");
 	function runNext(i) {
 		if(i >= problems.length) {
 			return;
 		}
-		$scope.runProblem(problems[i], true);
+		var problem = $scope.runProblem(problems[i], true);
 		progressBar.progressbar({value:100*(i+1) / problems.length});
+		problem.then(function() {
+			if(problems[i].correct) {
+				$scope.problemsDone++;
+				$scope.$apply();
+			}
+		});
 		window.setTimeout(function() { runNext(i+1); }, 25);
 	}
 
@@ -67,6 +75,7 @@ function Problem(number) {
 	this.elapsed = null;
 	this._result = null;
 	this._error = null;
+	this.correct = null;
 
 	Object.defineProperties(this, {
 		result: {
@@ -134,6 +143,7 @@ Problem.prototype.runProblem = function() {
 }
 
 Problem.prototype._execute = function() {
+	this.correct = false;
 	var start;
 	if(eulerRequests[this.number]) {
 		var blockingRequestData = eulerRequests[this.number]();
@@ -144,5 +154,6 @@ Problem.prototype._execute = function() {
 		this.result = eulerProblems[this.number]();
 	}
 	this.elapsed = new Date().getTime() - start;
+	this.correct = this.result.result == this.result.expected;
 	return this.result;
 }
