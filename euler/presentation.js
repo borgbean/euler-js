@@ -1,9 +1,10 @@
+"use strict"
 var euler = angular.module('eulerProblems', [])
 
 
 var problemCount = 83;
-var exclude = [80];  // euler problems I skipped
-var otherProblems = [89, 96, 97, 99, 104, 187, 197, 204, 206, 243];  // other problems
+var exclude = [];  // euler problems I skipped
+var otherProblems = [85, 87, 89, 96, 97, 99, 102, 104, 112, 187, 197, 204, 206, 243];  // other problems
 var eulerProblems = [];
 var eulerRequests = [];
 euler.controller('problemController', ['$scope', function ($scope) {
@@ -39,6 +40,7 @@ euler.controller('problemController', ['$scope', function ($scope) {
 
 	$scope.runAll = function() {
 		$scope.problemsElapsed = 0;
+		$scope.problemsDone = 0;
 		progressBar.progressbar({value:.001});
 		runNext(0);
 	};
@@ -92,6 +94,7 @@ function Problem(number) {
 				return this._error;
 			},
 			set: function(error) {
+				this.correct = false;
 				this._result = null;
 				this._error = error;
 			}
@@ -118,13 +121,19 @@ Problem.prototype.loadProblem = function(preload) {
 				resolve();
 			}
 		};
+		script.onerror = function(e) {
+			problem.loading = false;
+			problem.correct = false;
+			problem.error = "Failed to load script";
+			reject();
+		};
 		document.body.appendChild(script);
 	});
 	return promise;
 }
 
 Problem.prototype.runProblem = function() {
-	problem = this;
+	var problem = this;
 	if(!this.loaded) {
 		if(!this.loading) {
 			return this.loadProblem();

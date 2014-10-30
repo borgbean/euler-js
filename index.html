@@ -12,7 +12,7 @@
 		<input type="button" id="run_all" value="Run all" data-ng-click="runAll()">
 	</div>
 	<ul id="problems" data-ng-cloak>
-		<li class="problem" data-ng-repeat="problem in problems" data-ng-class="{problem_error: problem.correct !== null && !problem.correct}" data-ng-style="{ background: problem.correct ? 'rgba(0, 255, 0, ' + (.05 + Math.pow(2, .92 + problem.elapsed/1000)-1.8) + ')' : '' }">
+		<li class="problem" data-ng-repeat="problem in problems" data-ng-class="{problem_error: problem.correct !== null && !problem.correct}" data-ng-style="{ background: problem.correct ? 'rgba(0, 255, 0, ' + (.08 + Math.pow(2, problem.elapsed/1000) - 1) + ')' : '' }">
 			<span id="problem_control"><input type="button" value="Run" data-ng-click="runProblem(problem)"></span>
 			Problem {{ problem.number }}:
 			<span id="error" data-ng-hide="problem.error===null">
