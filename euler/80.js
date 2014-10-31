@@ -28,6 +28,7 @@
 			if(a.compare(b) > -1) {
 				a = a.subtract(b);
 				if(bLen < 8 || b._d[0] < 1e8) {
+					//don't create new object if not necessary (.add creates a new bigint)
 					b._d[0] += 10
 				} else {
 					b = b.add(10);
@@ -76,7 +77,7 @@
 				else if (x < 10000000) return 7;
 				else if (x < 100000000) return 8;
 				else if (x < 1000000000) return 9; 
-				else return (Math.log(x)/l10)|0 + 1;
+				else return ((Math.log(x)/l10)|0) + 1;
 			}
 	}
 
