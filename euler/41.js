@@ -1,23 +1,14 @@
 (function(eulerProblems) {
 	"use strict";
-	var primes;
 	eulerProblems[41] = function() {
 		var largest = null;
-		primes = sieve_unaltered(7654321);  //8+9 digits all divisible by 3
-		for(var i = primes.length - 1; i >= 0;) {
-			if(!primes[i]) {
-				--i;
-				continue;
-			}
-			var decBy = isPandigital(i * 2 + 1);
+		var primes = sieve(7654321);  //8+9 digits all divisible by 3
+		for(var i = primes.length - 1; i >= 0; --i) {
+			var prime = primes[i];
+			var decBy = isPandigital(prime);
 			if(decBy === 0) {
-				largest = i * 2 + 1;
+				largest = prime;
 				break;
-			}
-			if(decBy > 1) {
-				i -= Math.floor(decBy/2);
-			} else {
-				--i;
 			}
 		}
 

@@ -1,13 +1,12 @@
 (function(eulerProblems) {
 	"use strict";
-	var primes;
 	eulerProblems[37] = function() {
-		primes = sieve_unaltered(1e6);
+		var primes = sieve(1e6);
 		var results = [];
 
 		for(var i = 0; i < primes.length; ++i) {
-			var num = i*2 + 1;
-			if(!primes[i] || num < 10) {
+			var num = primes[i];
+			if(num < 10) {
 				continue;
 			}
 			var digits = Math.ceil(Math.log(num) / Math.log(10));

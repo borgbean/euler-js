@@ -1,15 +1,14 @@
 (function(eulerProblems) {
 	"use strict";
-	var primes, primesOrig;
+	var primes;
 	var primesOrigLength;
 	var primesLength;
 	var longest;
 	var targetLength = 5;
 	eulerProblems[60] = function() {
 
-		primesOrig = sieve_unaltered(10000);
-		primes = sieve_from_unaltered(primesOrig);
-		primesOrigLength = primesOrig.length;
+		primes = sieve(10000);
+		primesOrigLength = 5000;
 		primesLength = primes.length;
 
 		var longest = getNextValidPrime([], 0);
@@ -89,7 +88,7 @@
 
 		var half = Math.floor(num/2);
 		if(primesOrigLength > half) {
-			return primesOrig[half];
+			return isPrime(primes, half);
 		}
 		var sqrt = Math.sqrt(num);
 		for(var i = 0, max = primesLength; i < max && primes[i] <= sqrt; ++i) {

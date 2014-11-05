@@ -1,6 +1,80 @@
-function sieve(max) {
-	return sieve_from_unaltered(sieve_unaltered(max));
+// function sieve(max) {
+// 	return sieve_from_unaltered(sieve_unaltered(max));
+// }
+
+function fill_segment(start, size, sqrt_max, list, primes) {
+	var real_start = (start<<1)|1;
+	for(var i = 0, max = primes.length; i < max; ++i) {
+		var prime = primes[i];
+		if(prime > sqrt_max) {
+			break;
+		}
+		var prime_start_rem = real_start % prime;
+		var prime_start = 0;
+		if(prime_start_rem !== 0) { 
+			prime_start = prime - prime_start_rem;
+		}
+		var real_prime_start = real_start + prime_start;
+		if((real_prime_start & 1) === 0) {
+			prime_start += prime;
+		}
+		if(real_prime_start < (prime*prime)) {
+			prime_start = prime*prime - real_start;
+		}
+		for(var j = prime_start>>1; j < size; j += prime) {
+			list[j] = false;
+		}
+	}
+	for(var i = 0; i < size; ++i) {
+
+		if(list[i] === false) {
+			continue;
+		}
+		var prime = real_start + (i << 1);
+		primes.push(prime);
+		if(prime <= sqrt_max) {
+			var prime_start = ((prime*prime) >> 1) - start;
+			for(var composite = prime_start; composite < size; composite += prime) {
+				list[composite] = false;
+			}
+		}
+	}
 }
+
+function sieve(limit) {
+	var sqrt_max = Math.sqrt(limit) | 0;
+	var list_size = sqrt_max >> 1;
+
+	var list = new Array(list_size);
+	var primes = [];
+
+	for(var i = 0; i < list_size; ++i) {
+		list[i] = true;
+	}
+
+	fill_segment(1, list_size - 1, sqrt_max, list, primes);
+
+	for(var start = list_size, max = limit>>1; start < max; start += list_size) {
+		//re-init list
+		for(var i = 0; i < list_size; ++i) {
+			list[i] = true;
+		}
+		var size = list_size;
+		if(list_size > ((limit>>1) - start)) {
+			size = (limit>>1) - start;
+		};
+		fill_segment(start, size, sqrt_max, list, primes);
+	}
+
+	primes.unshift(2);
+	return primes;
+}
+
+
+function isPrime(primes, num) {
+	return primes[binarySearch(0, primes.length, num, primes)] === num;
+}
+
 
 function sieve_from_unaltered(sieve) {
 	var final_numbers = [2];
@@ -40,7 +114,7 @@ function isPalindrome(str) {
 	return true;
 }
 
-function isPrime(primes, num) {
+function old_isPrime(primes, num) {
 	if(num === 2) {
 		return true;
 	}
@@ -98,11 +172,11 @@ function binarySearch(start, end, findme, list, cmp) {
 			// too far left
 			var left = mid + 1;
 			var mid = (mid + right) >> 1;
-		} else {
+		} else if(diff > 0){
 			//too far right
-			var right = mid - 1;
+			var right = mid-1;
 			var mid = (left + mid) >> 1;
-		}
+		} else {return mid;}
 	}
 	if(mid < right && cmp(list[mid], findme) < 0) {
 		++mid;

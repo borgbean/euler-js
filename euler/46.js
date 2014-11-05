@@ -2,7 +2,7 @@
 	"use strict";
 	var primes;
 	eulerProblems[46] = function() {
-		primes = sieve_unaltered(1e5);
+		var primes = sieve(1e5);
 		var twiceSquares = [];
 		var i;
 

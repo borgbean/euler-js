@@ -18,7 +18,7 @@
 			var foundIdx = -1;
 			while(sum <= maxPrime && left >= 0) {
 				sum += primes[left];
-				if(sum < maxPrime && isPrime(primesOrig, sum)) {
+				if(sum < maxPrime && old_isPrime(primesOrig, sum)) {
 					foundIdx = left;
 				}
 				--left;

@@ -1,8 +1,6 @@
 (function(eulerProblems) {
 	"use strict";
-	var compact_sieve;
 	eulerProblems[27] = function() {
-		compact_sieve = sieve_unaltered(1000);
 		var primes = sieve(1000);
 		var primes_len = primes.length;
 		var max_len = 0;
@@ -15,13 +13,13 @@
 				if(temp < 0) {
 					break;
 				}
-				if(!isPrime(compact_sieve, temp)) {
+				if(!isPrime(primes, temp)) {
 					continue;
 				}
 
 				var n;
 				for(n = 1;;++n) {
-					if(!isPrime(compact_sieve, (n*n) + a*n + b)) {
+					if(!isPrime(primes, n*(n + a) + b)) {
 						break;
 					}
 				}

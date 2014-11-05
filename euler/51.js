@@ -57,7 +57,7 @@
 			order *= 10;
 		}
 		if((oldReplace >> (numLen-1)) !== 1) {
-			if(isPrime(primes, newNum)) {
+			if(old_isPrime(primes, newNum)) {
 				if(!minPrime || newNum < minPrime) {
 					minPrime = newNum;
 				}
@@ -76,7 +76,7 @@
 			for(var j = 0; j < addMeLen; ++j) {
 				newNum += addMe[j];
 			}
-			if(isPrime(primes, newNum)) {
+			if(old_isPrime(primes, newNum)) {
 				if(!minPrime || newNum < minPrime) {
 					minPrime = newNum;
 				}

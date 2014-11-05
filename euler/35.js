@@ -1,16 +1,12 @@
 (function(eulerProblems) {
 	"use strict";
-	var primes;
 	eulerProblems[35] = function() {
-		var count = 1; // 2 is the first one
-		primes = sieve_unaltered(1e6);
+		var count = 0;
+		var primes = sieve(1e6);
 		var primesDigitSorted = [];
 
 		for(var i = primes.length - 1; i >= 0; --i) {
-			if(!primes[i]) {
-				continue;
-			}
-			var sorted = ((i*2 + 1) + "").split("").sort().join("");
+			var sorted = (primes[i] + "").split("").sort().join("");
 			var digitsIdentical = true;
 			var duplicates = [];
 			var impossible = false;
@@ -27,14 +23,13 @@
 			if(impossible) {
 				continue;
 			}
-			if(digitsIdentical && isPrime(primes, num)) {
+			if(digitsIdentical) {
 				++count;
 				continue;
 			}
-			var num = i*2 + 1;
+			var num = primes[i];
 			var origNum = num;
 			var numStr = num + "";
-			if(!isPrime(primes, num)) continue;
 			for(var j = sorted.length - 1; j >= 0; --j) {
 				numStr = rotate(numStr);
 				num = parseInt(numStr, 10);

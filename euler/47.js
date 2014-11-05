@@ -2,7 +2,12 @@
 	"use strict";
 	var primes;
 	eulerProblems[47] = function() {
-		primes = sieve_unaltered(1e5);
+		primes = sieve(1e5);
+		var tmp = [];
+		for(var i = 0, max = primes.length; i < max; ++i) {
+			tmp[primes[i]] = true;
+		}
+		primes = tmp;
 
 		for(var i = 600;;i += 4) {
 			if(countFactors(primes, i) < 4) {
@@ -39,7 +44,7 @@
 	};
 
 	function countFactors(primes, num) {
-		if(isPrime(primes, num)) {
+		if(primes[num]) {
 			return 0;
 		}
 		var factors = 0;
@@ -49,10 +54,10 @@
 		}
 		var max = Math.floor(Math.sqrt(num)) | 1;
 		for(var i = 3; i < max && num > 1; i += 2) {
-			if(isPrime(primes, num)) {
+			if(primes[num]) {
 				return factors + 1;
 			}
-			if(!isPrime(primes, i)) {
+			if(!primes[i]) {
 				continue;
 			}
 			if((num % i) === 0) {
@@ -64,7 +69,7 @@
 				num /= i;
 			}
 		}
-		if(isPrime(primes, num)) {
+		if(primes[num]) {
 			return factors + 1;
 		}
 

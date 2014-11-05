@@ -1,8 +1,7 @@
 (function() {
 	"use strict";
 	eulerProblems[49] = function() {
-		var primesOriginal = sieve_unaltered(1e4);
-		var primes = sieve_from_unaltered(primesOriginal);
+		var primes = sieve(1e4);
 		var i = 0;
 		while(primes[++i] < 1000);
 		primes = primes.slice(i);
@@ -30,7 +29,7 @@
 				if(permutations.length >= 3) {
 					var max = permutations.length;
 					for(var curPerm = 1; curPerm < max; ++curPerm) {
-						if(!primesOriginal[Math.floor(permutations[curPerm]/2)]) {
+						if(isPrime(primes, Math.floor(permutations[curPerm]/2))) {
 							break;
 						}
 					}
