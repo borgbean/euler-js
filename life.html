@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>calculator</title>
+	<style type="text/css">
+	body {
+		margin: 0;
+		height: 100vh;
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+	}
+	.cells {
+		height: calc(100% - 1.5em);
+		display: flex;
+		flex-direction: column;
+	}
+	.cell-row {
+		display: flex;
+		height: 100%;
+		flex-direction: row;
+	}
+	.cell {
+		width: 100%;
+	    border-left: 1px solid black;
+	    border-bottom: 1px solid black;
+	}
+
+	.cell.ng-scope:last-child {
+	    border-right: 1px solid black;
+	}
+
+	.cell.inhabited {
+		background-color: black;
+	}
+
+	.controls {
+		height: 1.5em;
+	}
+	</style>
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.0/angular.min.js"></script>
+</head>
+<body data-ng-app="life" data-ng-controller="GameOfLife">
+	<div class="cells">
+		<div data-ng-repeat="cellRow in cells" class="cell-row">
+			<div data-ng-repeat="cell in cellRow" class="cell" data-ng-mousedown="draggingStarted(cell)" data-ng-class="{inhabited: cell.inhabited}" data-ng-mouseover="drag(cell)"></div>
+		</div>
+	</div>
+	<div class="controls">
+		<button data-ng-click="stop()">
+		  stop
+		</button>
+		<button data-ng-click="start()">
+		  start
+		</button>
+		<button data-ng-click="clear()">
+		  clear
+		</button>
+		<label>speed<input data-ng-model="settings.speed" value="250" data-ng-init="settings.speed=250"></label>
+		<label>rows<input data-ng-model="settings.rows" value="60" data-ng-init="settings.rows=60"></label>
+		<label>cols<input data-ng-model="settings.cols" value="60" data-ng-init="settings.cols=60"></label>
+	</div>
+
+
+	<script type="text/javascript" src="life.js"></script>
+</body>
+</html>

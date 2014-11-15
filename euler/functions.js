@@ -98,7 +98,7 @@ function sieve_unaltered(max) {
 	for(var i = 3; i <= sqrt; i += 2) {
 		var j = Math.floor(i / 2);
 		if(!numbers[j]) {continue;}
-		for(j += i; j < halfMax; j += i) {
+		for(j = (i*i)>>1; j < halfMax; j += i) {
 			numbers[j] = false;
 		}
 	}
@@ -156,7 +156,6 @@ function GET(url) {
 	return file.responseText;
 }
 
-// binary search slice of a list starting at start and ending at end, returning an element greater than your query when possible, if there is not a match.
 function binarySearch(start, end, findme, list, cmp) {
 	var left = start;
 	var right = end;
@@ -166,14 +165,11 @@ function binarySearch(start, end, findme, list, cmp) {
 	}
 
 	while(left < right) {
-		//list[mid] > findMe
 		var diff = cmp(list[mid], findme);
 		if(diff < 0) {
-			// too far left
 			var left = mid + 1;
 			var mid = (mid + right) >> 1;
 		} else if(diff > 0){
-			//too far right
 			var right = mid-1;
 			var mid = (left + mid) >> 1;
 		} else {return mid;}

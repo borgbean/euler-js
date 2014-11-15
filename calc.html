@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>calculator</title>
+	<style type="text/css">
+	.error {
+		color: red;
+	}
+	.errorWrapper {
+		opacity: .7;
+	}
+	</style>
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js"></script>
+</head>
+<body data-ng-app="calc">
+	<div data-ng-controller="CalcController">
+		<form novalidate onsubmit="return false;" ng-model="calcForm">
+			<label>Input: <input ng-model="calcForm.input" ng-init="calcForm.input=''"></label>
+			<button ng-click="update(calcForm)">SAVE</button>
+		</form>
+		<div data-ng-if="result !== null">
+			{{result}}
+		</div>
+		<div data-ng-if="error && error.length > 0">
+			{{error[0][1]}}<br>
+			{{ calcForm.input.substring(0, error[0][0][0]) }}<span class="error">{{ calcForm.input.substring(error[0][0][0], error[0][0][1]) }}</span>{{ calcForm.input.substring(error[0][0][1]) }}
+			<span data-ng-repeat="err in error.slice(1)">
+				<br>
+				{{ calcForm.input.substring(0, err[0]) }}<span class="error">{{ calcForm.input.substring(err[0]) }}</span> - {{ err[1] }}
+			</span>
+		</div>
+	</div>
+
+
+	<script type="text/javascript" src="calc.js"></script>
+</body>
+</html>

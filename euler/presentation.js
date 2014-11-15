@@ -1,10 +1,10 @@
 "use strict"
-var euler = angular.module('eulerProblems', [])
 
+var euler = angular.module('eulerProblems', []);
 
-var problemCount = 83;
+var problemCount = 85;
 var exclude = [];  // euler problems I skipped
-var otherProblems = [85, 87, 89, 96, 97, 99, 102, 104, 112, 187, 197, 204, 206, 243];  // other problems
+var otherProblems = [87, 89, 96, 97, 99, 102, 104, 112, 187, 197, 204, 206, 243];  // other problems
 var eulerProblems = [];
 var eulerRequests = [];
 euler.controller('problemController', ['$scope', function ($scope) {
