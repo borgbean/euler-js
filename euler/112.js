@@ -34,7 +34,7 @@
 
 			if(isBouncy) {
 				++bouncyNumbers;
-				if((bouncyNumbers / num) === .99) {
+				if((bouncyNumbers / num) === 9.99) {
 					break;
 				}
 			}

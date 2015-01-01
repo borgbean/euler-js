@@ -23,15 +23,15 @@
 				}
 				carry = 0;
 				if(digits[digit] > 9) {
-					var tens = Math.floor(digits[digit] / 10);
+					var tens_ = Math.floor(digits[digit] / 10);
 					digits[digit] = digits[digit] % 10;
-					carry = tens;
+					carry = tens_;
 				}
 			}
 		}
 		var sum = 0;
-		for(var i = digits.length - 1; i >= 0; --i) {
-			sum += digits[i];
+		for(var j = digits.length - 1; j >= 0; --j) {
+			sum += digits[j];
 		}
 
 		return { result: sum, expected: 648 };

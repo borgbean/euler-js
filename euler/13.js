@@ -9,8 +9,8 @@
 		}
 
 		var sum = 0;
-		for(var i = 0; i < numbers.length; ++i) {
-			sum += numbers[i];
+		for(var j = 0; j < numbers.length; ++j) {
+			sum += numbers[j];
 		}
 
 		sum = (sum + "").slice(0, 10);

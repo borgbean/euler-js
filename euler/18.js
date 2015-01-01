@@ -24,7 +24,7 @@
 			return 0;
 		}
 
-		if(memoized_routes[row][col] != null) {
+		if(typeof memoized_routes[row][col] !== 'undefined') {
 			return memoized_routes[row][col];
 		}
 

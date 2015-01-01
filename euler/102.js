@@ -6,6 +6,14 @@
 		return GET("euler/files/p102_triangles.txt");
 	};
 
+	function vectorBetween(v0, v1) {
+		return [v1[0] - v0[0], v1[1] - v0[1]];
+	}
+
+	function dotProd(v0, v1) {
+		return v0[0]*v1[0] + v0[1]*v1[1];
+	}
+
 	//I'm lazy, so the math is blatantly stolen from http://www.blackpawn.com/texts/pointinpoly/.
 	eulerProblems[102] = function(input) {
 		var count = 0;
@@ -30,8 +38,8 @@
 			var dot12 = dotProd(v1, v2);
 
 			var invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-			var u = (dot11 * dot02 - dot01 * dot12) * invDenom
-			var v = (dot00 * dot12 - dot01 * dot02) * invDenom
+			var u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+			var v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
 			var inside = (u >= 0) && (v >= 0) && (u + v < 1);
 
@@ -40,13 +48,5 @@
 
 		return { result: count, expected: 228 };
 	};
-
-	function vectorBetween(v0, v1) {
-		return [v1[0] - v0[0], v1[1] - v0[1]];
-	}
-
-	function dotProd(v0, v1) {
-		return v0[0]*v1[0] + v0[1]*v1[1];
-	}
 
 })(eulerProblems, eulerRequests);

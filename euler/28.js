@@ -17,5 +17,5 @@
 			}
 		}
 		return { result: sum, expected: 669171001 };
-	}
+	};
 })(eulerProblems);

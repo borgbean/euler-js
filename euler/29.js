@@ -17,5 +17,5 @@
 		}
 
 		return {result: count, expected: 9183};
-	}
+	};
 })(eulerProblems);

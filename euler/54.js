@@ -117,7 +117,7 @@
 		var hands = [];
 		//royal flush
 		hands.push(function(hand) {
-			var kings = hand['K'];
+			var kings = hand.K;
 			if(!kings || kings.length > 1) {
 				return [];
 			}

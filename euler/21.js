@@ -22,7 +22,7 @@
 					}
 				}
 			}
-			if(divisor_sums[sum] == null) {
+			if(typeof divisor_sums[sum] === 'undefined') {
 				divisor_sums[sum] = [];
 			}
 			divisor_sums[sum].push(i);
@@ -30,12 +30,12 @@
 
 		var sum = 0;
 		for(var i = 0; i < 10000; ++i) {
-			if(divisor_sums[i] == null) {
+			if(typeof divisor_sums[i] === 'undefined') {
 				continue;
 			}
 			for(var j = divisor_sums[i].length - 1; j >= 0; --j) {
 				var num = divisor_sums[i][j];
-				if(divisor_sums[num] != null) {
+				if(typeof divisor_sums[num] !== 'undefined') {
 					var idx = divisor_sums[num].indexOf(i);
 					if(idx != -1) {
 						if(divisor_sums[num][idx] == num) {

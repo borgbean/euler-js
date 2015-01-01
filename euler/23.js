@@ -40,7 +40,7 @@
 		}
 		var sum = 0;
 		for(var i = representable_numbers.length - 1; i >= 0; --i) {
-			if(representable_numbers[i] == null) {
+			if(typeof representable_numbers[i] === 'undefined') {
 				sum += i;
 			}
 		}

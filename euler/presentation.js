@@ -3,8 +3,10 @@
 var euler = angular.module('eulerProblems', []);
 
 var problemCount = 85;
+// var problemCount = 0;
 var exclude = [];  // euler problems I skipped
 var otherProblems = [87, 89, 96, 97, 99, 102, 104, 112, 187, 197, 204, 206, 243];  // other problems
+// var otherProblems = [95];  // other problems
 var eulerProblems = [];
 var eulerRequests = [];
 euler.controller('problemController', ['$scope', function ($scope) {

@@ -20,8 +20,8 @@
 			}
 		}
 		var sum = 0;
-		for(var i = digits.length - 1; i >= 0; --i) {
-			sum += digits[i];
+		for(var j = digits.length - 1; j >= 0; --j) {
+			sum += digits[j];
 		}
 
 		return { result: sum, expected: 1366 };
